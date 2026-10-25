@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technische Informatik - Vorlesung 02 & 03</title>
+  <style>
+    /* Reset & Base System */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #131b2e;
+      --card-border: #1f2d4a;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --cyan: #00d2ff;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --indigo: #6366f1;
+      --purple: #a855f7;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Header & Footer Layout */
+    header {
+      background: rgba(19, 27, 46, 0.95);
+      border-bottom: 1px solid var(--card-border);
+      height: 64px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    footer {
+      background: rgba(19, 27, 46, 0.95);
+      border-top: 1px solid var(--card-border);
+      height: 64px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      bottom: 0;
+      z-index: 50;
+    }
+
+    /* Main Display Area */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Slides Engine */
+    .slide {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Components Styling */
+    .slide-header {
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slide-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.05em;
+      font-family: monospace;
+    }
+
+    .slide-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      width: 100%;
+    }
+
+    /* Math & Code Blocks (Fixed LTR Direction) */
+    .math-hero {
+      background: linear-gradient(135deg, #0e1626, #16223b);
+      border: 1px solid #2a3d66;
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      direction: ltr;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.1);
+    }
+
+    .code-box {
+      background: #090d16;
+      border: 1px solid #1a253a;
+      border-radius: 10px;
+      padding: 1rem;
+      direction: ltr;
+      text-align: left;
+      font-family: Consolas, monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+
+    .code-box span.hl-cyan { color: var(--cyan); font-weight: bold; }
+    .code-box span.hl-green { color: var(--emerald); font-weight: bold; }
+    .code-box span.hl-rose { color: var(--rose); font-weight: bold; }
+    .code-box span.hl-amber { color: var(--amber); font-weight: bold; }
+
+    /* Interactive Buttons */
+    .btn {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background: #334155;
+      border-color: var(--cyan);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00b4db, #0083b0);
+      border: none;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      box-shadow: 0 0 15px rgba(0, 180, 219, 0.4);
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.active { display: flex; }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 18px;
+      padding: 1.5rem;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    .badge-cyan { background: rgba(0, 210, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 210, 255, 0.3); }
+    .badge-green { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-rose { background: rgba(244, 63, 94, 0.1); color: var(--rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #00d2ff, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #000; font-family: monospace;">TI</div>
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 800;">Technische Informatik • TH Wildau</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;" dir="ltr">Zahlendarstellungen & Codes</div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem;">
+      <button class="btn" onclick="toggleModal('notesModal')">💡 ملاحظات الشرح (N)</button>
+      <button class="btn" onclick="toggleModal('indexModal')">☰ الفهرس (O)</button>
+      <button class="btn" onclick="toggleFullscreen()">⛶ شاشة كاملة (F)</button>
+    </div>
+  </header>
+
+  <!-- Presentation Main Space -->
+  <main>
+
+    <!-- SLIDE 1: INTRO -->
+    <section class="slide active" data-title="المقدمة وخريطة المحاضرة">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">EINFÜHRUNG IN DIE TI</span>
+          <h2 class="slide-title">أنظمة العد والعمليات الحسابية في المعالج</h2>
+        </div>
+        <span class="badge badge-cyan">WiSe 2026/27</span>
+      </div>
+
+      <div class="card" style="background: linear-gradient(135deg, #131b2e, #1a253c); border-color: #2a3d66;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.75rem; color: #fff;">أهلاً بك يا بطل! 🚀</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1rem;">
+          المحاضرة دي مصممة خصيصاً لتفهم بالتفصيل وتتقن مسائل امتحانات الـ <strong>1. Zwischenprüfung</strong> بجامعة TH Wildau.
+          سنتعلم كيف يفكر المعالج، وكيف يجمع، يطرح، يضرب، ويقسم بكل الأنظمة (Binary, Octal, Hex)، وكيف يتعامل مع الكسور والأعداد السالبة.
+        </p>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <span class="badge badge-cyan">Stellenwertsysteme</span>
+          <span class="badge badge-green">4 Operations (+ - * /)</span>
+          <span class="badge badge-rose">Zweierkomplement</span>
+          <span class="badge badge-cyan">IEEE 754 Floating Point</span>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div style="color: var(--cyan); font-weight: 700; font-size: 0.85rem;">01. القيمة المكانية</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">معادلة الأساس b وتفكيك الخانات الصحيحة والكسرية.</p>
+        </div>
+        <div class="card">
+          <div style="color: var(--emerald); font-weight: 700; font-size: 0.85rem;">02. حسابات الأنظمة</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">قواعد الجمع، الطرح، الضرب، والقسمة في الثنائي والثماني والست عشري.</p>
+        </div>
+        <div class="card">
+          <div style="color: var(--rose); font-weight: 700; font-size: 0.85rem;">03. المتمم الثنائي</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">تمثيل السالب، وإسقاط الفيض في الجمع وحل مسألة 105 - 42.</p>
+        </div>
+        <div class="card">
+          <div style="color: var(--amber); font-weight: 700; font-size: 0.85rem;">04. الفاصلة العائمة</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">معيار IEEE 754 وتشريح الـ 32 بت وحل مسألتي الامتحان.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: RADIX FORMULA -->
+    <section class="slide" data-title="معادلة القيمة المكانية">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">STELLENWERTSYSTEME (SLIDE 2-18)</span>
+          <h2 class="slide-title">معادلة القيمة المكانية وتفكيك الرموز</h2>
+        </div>
+        <span class="badge badge-cyan">Formula</span>
+      </div>
+
+      <div class="math-hero">
+        z = &sum; a<sub>i</sub> &bull; b<sup>i</sup>
+        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal; margin-top: 0.5rem;">
+          Wobei gilt: 0 &le; a<sub>i</sub> &lt; b &nbsp;|&nbsp; b = Basis (Radix)
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div style="font-family: monospace; font-size: 1.1rem; color: var(--cyan); font-weight: bold;" dir="ltr">z (Value)</div>
+          <strong style="display:block; margin: 0.25rem 0;">الناتج العشري الإجمالي</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">القيمة العشرية الحقيقية بعد حساب مجموع أوزان كافة الخانات.</p>
+        </div>
+        <div class="card">
+          <div style="font-family: monospace; font-size: 1.1rem; color: var(--indigo); font-weight: bold;" dir="ltr">b (Base)</div>
+          <strong style="display:block; margin: 0.25rem 0;">أساس النظام العددي</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">عدد الرموز المسموحة (الثنائي b=2، الثماني b=8، الست عشري b=16).</p>
+        </div>
+        <div class="card">
+          <div style="font-family: monospace; font-size: 1.1rem; color: var(--emerald); font-weight: bold;" dir="ltr">i (Index)</div>
+          <strong style="display:block; margin: 0.25rem 0;">رقم وموقع الخانة</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">يبدأ من 0 للآحاد ويزداد يساراً (1, 2..)، وينزل بالسالب يميناً بعد الفاصلة (-1, -2..).</p>
+        </div>
+        <div class="card">
+          <div style="font-family: monospace; font-size: 1.1rem; color: var(--amber); font-weight: bold;" dir="ltr">a<sub>i</sub> (Digit)</div>
+          <strong style="display:block; margin: 0.25rem 0;">الرقم الفعلي بالخانة</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">الرقم الموجود في الموضع i، ويشترط حتماً أن يكون أصغر تماماً من الأساس b.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--cyan);">تطبيق مباشر على كسر ثنائي من السلايد (Slide 2-26):</h4>
+        <div class="code-box">
+          <span class="hl-cyan">101101,1101₂</span> = (1&bull;2⁵) + (1&bull;2³) + (1&bull;2²) + (1&bull;2⁰) + (1&bull;2⁻¹) + (1&bull;2⁻²) + (1&bull;2⁻⁴)<br>
+          = 32 + 8 + 4 + 1 + 0.5 + 0.25 + 0.0625 = <span class="hl-green">45.8125₁₀</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: BINARY ARITHMETIC -->
+    <section class="slide" data-title="العمليات الحسابية: النظام الثنائي">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">BINÄRE ARITHMETIK (+ - * /)</span>
+          <h2 class="slide-title">العمليات الحسابية الأربع في النظام الثنائي</h2>
+        </div>
+        <span class="badge badge-cyan">Base = 2</span>
+      </div>
+
+      <div class="grid-2">
+        <!-- Addition -->
+        <div class="card">
+          <h3 style="color: var(--cyan); margin-bottom: 0.5rem;">1. الجمع الثنائي (Binary Addition)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">قاعدة الـ Carry: في الثنائي 1 + 1 = 0 ومعنا Carry 1 (يكافئ 2 بالعشري).</p>
+          <div class="code-box">
+            0 + 0 = 0<br>
+            1 + 0 = 1<br>
+            <span class="hl-cyan">1 + 1 = 10₂</span> (0 ومعنا Carry 1 للخانة التالية)<br>
+            <span class="hl-amber">1 + 1 + 1 = 11₂</span> (1 ومعنا Carry 1)<br><br>
+            مثال: 1101₂ (13) + 1011₂ (11)<br>
+            &nbsp;&nbsp;1101<br>
+            + 1011<br>
+            ------<br>
+            <span class="hl-green">= 11000₂</span> (24₁₀)
+          </div>
+        </div>
+
+        <!-- Subtraction -->
+        <div class="card">
+          <h3 style="color: var(--rose); margin-bottom: 0.5rem;">2. الطرح الثنائي (Binary Subtraction)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">قاعدة الـ Borrow: الاستلاف من الخانة اليسرى يعطي الخانة الحالية (+2₁₀).</p>
+          <div class="code-box">
+            0 - 0 = 0<br>
+            1 - 0 = 1<br>
+            1 - 1 = 0<br>
+            <span class="hl-rose">0 - 1 = 1</span> (مع استلاف Borrow 1 من اليسار يضيف 2 للخانة)<br><br>
+            مثال: 1100₂ (12) - 0101₂ (5)<br>
+            &nbsp;&nbsp;1100<br>
+            - 0101<br>
+            ------<br>
+            <span class="hl-green">= 0111₂</span> (7₁₀)
+          </div>
+        </div>
+
+        <!-- Multiplication -->
+        <div class="card">
+          <h3 style="color: var(--emerald); margin-bottom: 0.5rem;">3. الضرب الثنائي (Binary Multiplication)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">تعتمد على الإزاحة والجمع (Shift and Add) مثل الضرب المدرسي تماماً.</p>
+          <div class="code-box">
+            0 &times; 1 = 0 &nbsp;|&nbsp; 1 &times; 1 = 1<br><br>
+            مثال: 101₂ (5) &times; 011₂ (3)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;101<br>
+            &nbsp;&nbsp;&times;&nbsp;011<br>
+            &nbsp;&nbsp;-----<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;101 &nbsp;(ضرب بالخانة الأولى)<br>
+            &nbsp;&nbsp;1010 &nbsp;(ضرب بالخانة الثانية مع إزاحة)<br>
+            &nbsp;&nbsp;-----<br>
+            <span class="hl-green">= 1111₂</span> (15₁₀)
+          </div>
+        </div>
+
+        <!-- Division -->
+        <div class="card">
+          <h3 style="color: var(--amber); margin-bottom: 0.5rem;">4. القسمة الثنائية (Binary Division)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">قسمة مطولة مقارنة وطرح: إذا كان الجزء أكبر نضع 1 ونطرح، وإلا نضع 0.</p>
+          <div class="code-box">
+            مثال: 1100₂ (12) &divide; 10₂ (2)<br>
+            - 11 &ge; 10 &rarr; الناتج 1، والباقي 1<br>
+            - ننزل 0 &rarr; 10 &ge; 10 &rarr; الناتج 1، والباقي 0<br>
+            - ننزل 0 &rarr; 0 &lt; 10 &rarr; الناتج 0<br><br>
+            <span class="hl-green">خارج القسمة = 0110₂ (6₁₀)</span> بدون باقي.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: OCTAL ARITHMETIC -->
+    <section class="slide" data-title="العمليات الحسابية: النظام الثماني">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">OKTALE ARITHMETIK (+ - * /)</span>
+          <h2 class="slide-title">العمليات الحسابية في النظام الثماني (Base 8)</h2>
+        </div>
+        <span class="badge badge-cyan">Ziffern: 0..7</span>
+      </div>
+
+      <div class="grid-2">
+        <!-- Octal Add -->
+        <div class="card">
+          <h3 style="color: var(--cyan); margin-bottom: 0.5rem;">1. الجمع الثماني (Octal Addition)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">إذا وصل المجموع أو زاد عن 8 نطرح 8 ونرحل Carry 1 للخانة التالية.</p>
+          <div class="code-box">
+            مثال: جمع 37₈ مع 25₈<br>
+            &nbsp;&nbsp;3 7₈<br>
+            + 2 5₈<br>
+            -----<br>
+            &bull; الخانة 0: 7 + 5 = 12₁₀ &rarr; 12 - 8 = <span class="hl-cyan">4</span> ومعنا <span class="hl-amber">Carry 1</span><br>
+            &bull; الخانة 1: 3 + 2 + 1(Carry) = <span class="hl-cyan">6</span><br>
+            -----<br>
+            <span class="hl-green">= 64₈</span> (تساوي 52 بالعشري)
+          </div>
+        </div>
+
+        <!-- Octal Sub -->
+        <div class="card">
+          <h3 style="color: var(--rose); margin-bottom: 0.5rem;">2. الطرح الثماني (Octal Subtraction)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">عند الاستلاف (Borrow) من الخانة المجاورة، فإن الـ 1 المستلف يعادل (+8) بالخانة الحالية.</p>
+          <div class="code-box">
+            مثال: طرح 24₈ من 52₈<br>
+            &nbsp;&nbsp;5 2₈<br>
+            - 2 4₈<br>
+            -----<br>
+            &bull; الخانة 0: 2 - 4 لا تصح &rarr; نستلف 1 تصبح (2 + 8 = 10) &rarr; 10 - 4 = <span class="hl-rose">6</span><br>
+            &bull; الخانة 1: أصبحت 4 &rarr; 4 - 2 = <span class="hl-rose">2</span><br>
+            -----<br>
+            <span class="hl-green">= 26₈</span> (تساوي 22 بالعشري)
+          </div>
+        </div>
+
+        <!-- Octal Mul -->
+        <div class="card">
+          <h3 style="color: var(--emerald); margin-bottom: 0.5rem;">3. الضرب الثماني (Octal Multiplication)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">نضرب الخانات عشرياً، ثم نحول الناتج إلى ثماني (قسمة على 8 مع باقي).</p>
+          <div class="code-box">
+            مثال: 14₈ &times; 3₈<br>
+            - 3 &times; 4 = 12₁₀ &rarr; 12 &divide; 8 = 1 والباقي 4 &rarr; (نكتب 4 ومعنا Carry 1)<br>
+            - 3 &times; 1 + 1(Carry) = 4<br>
+            -----<br>
+            <span class="hl-green">= 44₈</span> (تساوي 36 بالعشري)
+          </div>
+        </div>
+
+        <!-- Octal Div -->
+        <div class="card">
+          <h3 style="color: var(--amber); margin-bottom: 0.5rem;">4. القسمة الثمانية (Octal Division)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">تتم بالقسمة المطولة أو تحويل كل خانة ثمانية إلى 3 بت ثنائية وتسهيل العملية.</p>
+          <div class="code-box">
+            مثال: 64₈ &divide; 4₈<br>
+            - 6 &divide; 4 = 1 والباقي 2₈<br>
+            - ننزل الـ 4 &rarr; تصبح 24₈ (قيمتها 20 بالعشري)<br>
+            - 20 &divide; 4 = 5₈<br>
+            -----<br>
+            <span class="hl-green">= 15₈</span> (تساوي 13 بالعشري)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: HEX ARITHMETIC -->
+    <section class="slide" data-title="العمليات الحسابية: النظام الست عشري">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">HEXADEZIMALE ARITHMETIK (+ - * /)</span>
+          <h2 class="slide-title">العمليات الحسابية في النظام الست عشري (Hex: Base 16)</h2>
+        </div>
+        <span class="badge badge-cyan">A=10 .. F=15</span>
+      </div>
+
+      <div class="grid-2">
+        <!-- Hex Add -->
+        <div class="card">
+          <h3 style="color: var(--cyan); margin-bottom: 0.5rem;">1. الجمع الست عشري (Hex Addition)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">إذا وصل المجموع 16 فأكثر، نطرح 16 ونكتب الباقي بالـ Hex مع Carry = 1.</p>
+          <div class="code-box">
+            مثال: 2B₁₆ + 1A₁₆ (B=11, A=10)<br>
+            &nbsp;&nbsp;2 B₁₆<br>
+            + 1 A₁₆<br>
+            -----<br>
+            &bull; B + A = 11 + 10 = 21₁₀ &rarr; 21 - 16 = <span class="hl-cyan">5</span> ومعنا <span class="hl-amber">Carry 1</span><br>
+            &bull; 2 + 1 + 1(Carry) = <span class="hl-cyan">4</span><br>
+            -----<br>
+            <span class="hl-green">= 45₁₆</span> (تساوي 69 بالعشري)
+          </div>
+        </div>
+
+        <!-- Hex Sub -->
+        <div class="card">
+          <h3 style="color: var(--rose); margin-bottom: 0.5rem;">2. الطرح الست عشري (Hex Subtraction)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">الاستلاف (Borrow) في الست عشري يضيف للخانة المستلفة (+16₁₀)!</p>
+          <div class="code-box">
+            مثال: 43₁₆ - 1E₁₆ (E=14)<br>
+            &nbsp;&nbsp;4 3₁₆<br>
+            - 1 E₁₆<br>
+            -----<br>
+            &bull; 3 - 14 لا تصح &rarr; نستلف 1 تصبح (3 + 16 = 19₁₀) &rarr; 19 - 14 = <span class="hl-rose">5</span><br>
+            &bull; الخانة 1 أصبحت 3 &rarr; 3 - 1 = <span class="hl-rose">2</span><br>
+            -----<br>
+            <span class="hl-green">= 25₁₆</span> (تساوي 37 بالعشري)
+          </div>
+        </div>
+
+        <!-- Hex Mul -->
+        <div class="card">
+          <h3 style="color: var(--emerald); margin-bottom: 0.5rem;">3. الضرب الست عشري (Hex Multiplication)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">نضرب عشرياً، ثم نقسم الناتج على 16 لاستخراج الباقي والـ Carry.</p>
+          <div class="code-box">
+            مثال: 1A₁₆ &times; 4₁₆ (A=10)<br>
+            - 4 &times; 10 = 40₁₀ &rarr; 40 &divide; 16 = 2 والباقي 8 &rarr; (نكتب 8 ومعنا Carry 2)<br>
+            - 4 &times; 1 + 2(Carry) = 6<br>
+            -----<br>
+            <span class="hl-green">= 68₁₆</span> (تساوي 104 بالعشري)
+          </div>
+        </div>
+
+        <!-- Hex Div -->
+        <div class="card">
+          <h3 style="color: var(--amber); margin-bottom: 0.5rem;">4. القسمة الست عشرية (Hex Division)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">قسمة مطولة بمراعاة أن كل رقم ست عشري يحول إلى مكافئه العشري عند الضرب.</p>
+          <div class="code-box">
+            مثال: A0₁₆ &divide; 8₁₆ (A0₁₆ = 160₁₀)<br>
+            - A₁₆ (10₁₀) &divide; 8 = 1 والباقي 2₁₆<br>
+            - ننزل الصفر &rarr; 20₁₆ (قيمتها 32₁₀)<br>
+            - 32 &divide; 8 = 4₁₆<br>
+            -----<br>
+            <span class="hl-green">= 14₁₆</span> (تساوي 20 بالعشري)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: TWO'S COMPLEMENT -->
+    <section class="slide" data-title="المتمم الثنائي وحل مسألة 105 - 42">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">ZWEIERKOMPLEMENT (SLIDE 3-10 BIS 3-25)</span>
+          <h2 class="slide-title">المتمم الثنائي وحل تمرين الامتحان: 105 - 42</h2>
+        </div>
+        <span class="badge badge-rose">Exam Focus</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color: var(--cyan); margin-bottom: 0.5rem;">كيف يصنع المعالج الرقم السالب؟</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            المعالج لا يطرح! بل يحول الطرح إلى جمع: <code style="color: var(--cyan);">105 + (-42)</code>.
+          </p>
+          <div class="code-box">
+            خطوات إيجاد -42 بالمتمم الثنائي (8-Bit):<br>
+            1. تمثيل +42 بالموجب: 00101010₂<br>
+            2. قلب البتات (المتمم الأحادي): 11010101₂<br>
+            3. إضافة 1 (المتمم الثنائي): <span class="hl-green">11010110₂</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--emerald); margin-bottom: 0.5rem;">تنفيذ عملية الجمع وإسقاط الفيض:</h3>
+          <div class="code-box">
+            &nbsp;&nbsp;&nbsp;01101001 &nbsp;(+105₁₀)<br>
+            + &nbsp;11010110 &nbsp;(-42₁₀)<br>
+            ----------------<br>
+            <span class="hl-rose">(1)</span><span class="hl-green">00111111</span> &nbsp;(فيض بالخانة التاسعة)<br><br>
+            <span class="hl-rose">Übertrag streichen!</span> يتم إسقاط البت التاسع فوراً.<br>
+            الناتج النهائي = <span class="hl-cyan">00111111₂</span> = 32+16+8+4+2+1 = <span class="hl-green">63₁₀</span>!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: IEEE 754 FLOATING POINT -->
+    <section class="slide" data-title="الأعداد الكسرية العائمة IEEE 754">
+      <div class="slide-header">
+        <div>
+          <span class="slide-tag">GLEITKOMMAZAHLEN (IEEE 754)</span>
+          <h2 class="slide-title">معيار الأعداد الكسرية العائمة (32-Bit Single Precision)</h2>
+        </div>
+        <span class="badge badge-cyan">Slide 3-20</span>
+      </div>
+
+      <div class="math-hero">
+        z = (-1)<sup>VZ</sup> &bull; 1.M &bull; 2<sup>(C - 127)</sup>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="badge badge-cyan">1 Bit</span>
+          <h4 style="margin: 0.5rem 0; color: #fff;">بت الإشارة (VZ)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            0 يعني أن الرقم موجب (+)، و 1 يعني أن الرقم سالب (-).
+          </p>
+        </div>
+        <div class="card">
+          <span class="badge badge-rose">8 Bits</span>
+          <h4 style="margin: 0.5rem 0; color: #fff;">الأس المزاح (Charakteristik C)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            لتفادي تخزين إشارات سالبة بالأس، يضاف رقم ثابت 127 دائماً: C = E + 127.
+          </p>
+        </div>
+        <div class="card">
+          <span class="badge badge-green">23 Bits</span>
+          <h4 style="margin: 0.5rem 0; color: #fff;">المانتيس (Mantisse M)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            الرقم 1 يسار الفاصلة لا يُخزن لتوفير المساحة (Hidden Bit)، ويخزن فقط كسر المانتيس.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4 style="color: var(--cyan); margin-bottom: 0.5rem;">مسألة الامتحان 1: فك شفرة C0 50 00 00₁₆</h4>
+          <div class="code-box">
+            1. فك الـ Hex إلى 32 بت:<br>
+            <span class="hl-rose">1</span> <span class="hl-amber">10000000</span> <span class="hl-cyan">10100000000000000000000</span><br>
+            2. VZ = 1 &rarr; سالب (-)<br>
+            3. C = 10000000₂ = 128 &rarr; E = 128 - 127 = <span class="hl-amber">1</span><br>
+            4. M = 0.101₂ = 0.625 &rarr; (1 + 0.625) = 1.625<br>
+            الناتج: -1.625 &times; 2¹ = <span class="hl-green">-3.25₁₀</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="color: var(--indigo); margin-bottom: 0.5rem;">مسألة الامتحان 2: تشفير -0.125₁₀ إلى Hex</h4>
+          <div class="code-box">
+            1. سالب &rarr; VZ = <span class="hl-rose">1</span><br>
+            2. 0.125 = 1/8 = 2⁻³ &rarr; 1.0 &times; 2⁻³ &rarr; E = -3<br>
+            3. C = -3 + 127 = 124₁₀ = <span class="hl-amber">01111100₂</span><br>
+            4. المانتيس بعد استبعاد الواحد = أصفار فقط<br>
+            تجميع الخانات: 1011(B) 1110(E) 0000(0)...<br>
+            الناتج النهائي بالـ Hex = <span class="hl-green">0xBE000000</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <footer>
+    <div style="display: flex; gap: 0.5rem;">
+      <button class="btn" onclick="prevSlide()">&larr; السابق</button>
+      <button class="btn btn-primary" onclick="nextSlide()">التالي &rarr;</button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem; font-family: monospace;">
+      <span id="slideIndicator" style="color: var(--cyan); font-weight: bold;">1 / 7</span>
+      <span id="slideTitleBar" style="color: var(--text-muted); font-size: 0.85rem;">المقدمة</span>
+    </div>
+
+    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">
+      Press &larr; &rarr; Keys
+    </div>
+  </footer>
+
+  <!-- Modal: Presenter Notes -->
+  <div id="notesModal" class="modal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <h3 style="font-weight: 800; color: #fff;">💡 ملاحظات الشرح للطالب</h3>
+        <button class="btn" onclick="toggleModal('notesModal')">✕ إغلاق</button>
+      </div>
+      <div id="notesBody" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Index Overview -->
+  <div id="indexModal" class="modal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <h3 style="font-weight: 800; color: #fff;">☰ فهرس المحاضرة</h3>
+        <button class="btn" onclick="toggleModal('indexModal')">✕ إغلاق</button>
+      </div>
+      <div id="indexList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Engine Script -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    const notesData = [
+      "ابدأ المحاضرة بطمأنة الطالب: المنهج تراكمي ومنطقي جداً. ركز على أن موعد الاختبار النصفي الأول 28 أكتوبر 2026.",
+      "اشرح معادلة القيمة المكانية: b هو الأساس و i هو رقم الموضع، والأسس السالبة تكون بعد الفاصلة في الكسور.",
+      "اشرح العمليات الحسابية في الثنائي: في الجمع 1+1=10 (Carry 1)، وفي الطرح الاستلاف يضيف 2، وفي الضرب نزيح ونجمع مثل الحساب العادي.",
+      "العمليات في الثماني: في الجمع إذا كان المجموع 8 فأكثر نقسم على 8 ونرحل الباقي. في الطرح الاستلاف من الخانة اليسرى يعطي +8.",
+      "العمليات في الست عشري: الحروف A=10 إلى F=15. الجمع إذا كان 16 فأكثر نطرح 16 ونرحل Carry 1. الاستلاف يضيف +16.",
+      "المتمم الثنائي: قلب البتات ثم إضافة 1. اشرح له كيف يتم إسقاط البت التاسع (Übertrag streichen) ليخرج الناتج 63 تلقائياً.",
+      "الفاصلة العائمة IEEE 754: ركز على أن حقل الأس يضاف له 127 دائماً، والمانتيس محذوف منها الرقم 1 الخفي (Hidden Bit)."
+    ];
+
+    function updatePresentation() {
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === currentSlide));
+      const cur = currentSlide + 1;
+      document.getElementById('slideIndicator').innerText = `${cur} / ${totalSlides}`;
+      document.getElementById('slideTitleBar').innerText = slides[currentSlide].getAttribute('data-title') || '';
+      document.getElementById('notesBody').innerText = notesData[currentSlide];
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updatePresentation();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updatePresentation();
+      }
+    }
+
+    function jumpToSlide(idx) {
+      currentSlide = idx;
+      updatePresentation();
+      toggleModal('indexModal');
+    }
+
+    function toggleModal(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('active');
+      if (id === 'indexModal' && el.classList.contains('active')) {
+        const list = document.getElementById('indexList');
+        list.innerHTML = '';
+        slides.forEach((s, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.style.width = '100%';
+          btn.style.justifyContent = 'space-between';
+          btn.innerHTML = `<span>${s.getAttribute('data-title')}</span> <span class="badge badge-cyan">${i+1}</span>`;
+          btn.onclick = () => jumpToSlide(i);
+          list.appendChild(btn);
+        });
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+      else if (e.key.toLowerCase() === 'f') toggleFullscreen();
+      else if (e.key.toLowerCase() === 'n') toggleModal('notesModal');
+      else if (e.key.toLowerCase() === 'o') toggleModal('indexModal');
+      else if (e.key === 'Escape') {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+      }
+    });
+
+    window.onload = updatePresentation;
+  </script>
+</body>
+</html>
